@@ -2,6 +2,7 @@
 #include <map>
 #include <array>
 #include <vector>
+#include "mmio.h"
 
 namespace algebra{
     enum class StorageOrder{
@@ -59,7 +60,7 @@ namespace algebra{
 
         }
 
-        void operator()(int row,int col, T n){
+        void operator()(std::size_t row, std::size_t col, T n){
             if (flag==0){
             std::array<std::size_t,2> indexes;
             if constexpr(so==StorageOrder::Row_wise)
@@ -203,12 +204,14 @@ namespace algebra{
 
         friend std::vector<T> operator*(std::vector<T> vec);
 
+        friend SparseMatrix reader_market_matrix(const std::string& filename);
+
 
     
 
     };
 
-    template<typename T>
+    template<typename T, StorageOrder so=StorageOrder::Row_wise>
     std::vector<T> operator*(std::vector<T> vec){
         std::vector<T> res(n_of_row);
         if(flag==0){
@@ -251,7 +254,46 @@ namespace algebra{
         return res;
     }
 
+    template<typename T, StorageOrder so=StorageOrder::Row_wise>
+    SparseMatrix reader_market_matrix(const std::string& filename){
+    MM_typecode matcode;
+    std::ifstream infile(filename);
+    std::size_t M, N, nz;
+    std::vector<std::size_t> I, J;
+    std::vector<T> val;
 
+    if (mm_read_banner(&infile, &matcode) != 0)
+    {
+        throw std::runtime_error("Could not process Matrix Market banner.");
+    }
 
-    
+    if (mm_is_complex(matcode) && mm_is_matrix(matcode) && mm_is_sparse(matcode))
+    {
+        throw std::runtime_error("Sorry, this function does not support Matrix Market type: " + std::string(mm_typecode_to_str(matcode)));
+    }
+
+    if ((mm_read_mtx_crd_size(&infile, &M, &N, &nz)) != 0)
+    {
+        throw std::runtime_error("Error reading matrix size.");
+    }
+
+    I.resize(nz);
+    J.resize(nz);
+    val.resize(nz);
+    SparseMatrix matrix(M,N);
+
+    for (std::size_t i = 0; i < nz; i++)
+    {
+        infile >> I[i] >> J[i] >> val[i];
+        I[i]--;  // adjust from 1-based to 0-based
+        J[i]--;
+         matrix(I[i],J[i],val[i]);
+    }
+     if (infile.is_open())
+        infile.close();
+    return matrix;
 }
+
+}
+    
+
