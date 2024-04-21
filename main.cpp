@@ -21,5 +21,8 @@ int main(){
     std::vector<double> res_com=matrix*vec;
     clock.stop();
     std::cout <<"For the uncompressd method the" << clock;
+    for(std::size_t i=0; i<131; ++i){
+        std::cout<< res_com[i]<<std::cout;
+    }
  
 }
