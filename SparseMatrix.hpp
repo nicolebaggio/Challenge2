@@ -7,6 +7,8 @@
 #include <map>
 #include <array>
 #include <vector>
+#include <fstream>
+#include <cstdio>
 
 
 namespace algebra{
@@ -28,7 +30,7 @@ namespace algebra{
         std::size_t n_of_row=0;
         
         public:
-        SparseMatrix(std::size_t row, std::size col): n_of_row(row), n_of_col(col){};
+        SparseMatrix(std::size_t row, std::size_t col): n_of_row(row), n_of_col(col){};
 
         void resize(std::size_t row, std::size_t col){
             if (flag==1){
@@ -129,7 +131,7 @@ namespace algebra{
                 inner.push_back(count);
                 for(std::size_t j=0; j<n_of_row; ++j){
                     if(data.at({i,j})!=data.end()){
-                        elements.[count]=data.at({i,j});
+                        elements[count]=data.at({i,j});
                         outer[count]=j;
                         count++;
                     }
@@ -168,7 +170,7 @@ namespace algebra{
 
         const T operator()(std::size_t row, std::size_t col){ //indixes starts from zero; is it right?
         if(row<0 || row>n_of_row || col<0 || col>n_of_col ){
-                     throw std::out_of_range("Out of range")}
+                     throw std::out_of_range("Out of range");}
             if(flag==0){
                 std::array<std::size_t,2> indexes;
                 if constexpr(so==StorageOrder::Row_wise)
@@ -285,7 +287,7 @@ namespace algebra{
     I.resize(nz);
     J.resize(nz);
     val.resize(nz);
-    SparseMatrix matrix(M,N);
+    SparseMatrix<T,so> matrix(M,N);
 
     for (std::size_t i = 0; i < nz; i++)
     {
