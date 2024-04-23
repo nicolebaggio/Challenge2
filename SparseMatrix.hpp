@@ -1,8 +1,13 @@
+#ifndef SPARSE_MATRIX_HPP
+#define SPARSE_MATRIX_HPP
+
+
+#include "mmio.h"
 #include <iostream>
 #include <map>
 #include <array>
 #include <vector>
-#include "mmio.h"
+
 
 namespace algebra{
     enum class StorageOrder{
@@ -25,7 +30,7 @@ namespace algebra{
         public:
         SparseMatrix(std::size_t row, std::size col): n_of_row(row), n_of_col(col){};
 
-        void resize(std::size_t row, std::size col){
+        void resize(std::size_t row, std::size_t col){
             if (flag==1){
                 std::cerr<<"Can't resize in a compress form!"<<std::endl;
                 return;
@@ -38,7 +43,7 @@ namespace algebra{
                 auto it=data.begin();
                 while(it!=data.end()){
                     if(it->first[0]>=row || it->first[1]>=col)
-                        data.erase(it->first);
+                        data.erase(it);
                     ++it;    
                 }
                 n_of_col=col;
@@ -202,7 +207,7 @@ namespace algebra{
             }
         }
 
-        friend std::vector<T> operator*(std::vector<T> vec);
+        friend std::vector<T> operator*(const SparseMatrix& M,const std::vector<T>& vec);
 
         friend SparseMatrix reader_market_matrix(const std::string& filename);
 
@@ -212,40 +217,40 @@ namespace algebra{
     };
 
     template<typename T, StorageOrder so=StorageOrder::Row_wise>
-    std::vector<T> operator*(std::vector<T> vec){
-        std::vector<T> res(n_of_row);
-        if(flag==0){
+    std::vector<T> operator*(const SparseMatrix<T,so>& M,std::vector<T>& vec){
+        std::vector<T> res(M.n_of_row);
+        if(M.flag==0){
             if constexpr(so==StorageOrder::Row_wise){
-                auto it=data.begin();
-                while(it!=data.end()){
+                auto it=M.data.begin();
+                while(it!=M.data.end()){
                     res[it->first[0]]+=it->second*vec[it->first[1]];
                     ++it;
                 }
             }
              if constexpr(so==StorageOrder::Column_wise){
-                auto it=data.begin();
-                while(it!=data.end()){
+                auto it=M.data.begin();
+                while(it!=M.data.end()){
                     res[it->first[1]]+=it->second*vec[it->first[0]];
                     ++it;
                 }
             }
 
         }
-        if(flag==1){
+        if(M.flag==1){
             if constexpr(so==StorageOrder::Row_wise){
-                for(int i=0; i<n_of_row; ++i){
+                for(int i=0; i<M.n_of_row; ++i){
                     T s=0;
-                    for(int j=0; j<inner[i+1]; ++j){
-                        s+=elements[j+inner[i]]*vec[outer[j+inner[i]]];
+                    for(int j=0; j<M.inner[i+1]; ++j){
+                        s+=M.elements[j+M.inner[i]]*vec[M.outer[j+M.inner[i]]];
                     }
                     res[i]=s;
                     s=0;
                 }
             }
             if constexpr(so==StorageOrder::Column_wise){
-                for(int i=0; i<n_of_col; ++i){
-                    for(int j=0; j<inner[i+1]; ++j){
-                        res[outer[j+inner[i]]]+=vec[outer[j+inner[i]]]*elements[j+inner[i]];
+                for(int i=0; i<M.n_of_col; ++i){
+                    for(int j=0; j<M.inner[i+1]; ++j){
+                        res[M.outer[j+M.inner[i]]]+=vec[M.outer[j+M.inner[i]]]*M.elements[j+M.inner[i]];
                     }
                 }
             }
@@ -255,7 +260,7 @@ namespace algebra{
     }
 
     template<typename T, StorageOrder so=StorageOrder::Row_wise>
-    SparseMatrix reader_market_matrix(const std::string& filename){
+    SparseMatrix<T,so> reader_market_matrix(const std::string& filename){
     MM_typecode matcode;
     std::ifstream infile(filename);
     std::size_t M, N, nz;
@@ -287,7 +292,7 @@ namespace algebra{
         infile >> I[i] >> J[i] >> val[i];
         I[i]--;  // adjust from 1-based to 0-based
         J[i]--;
-         matrix(I[i],J[i],val[i]);
+        matrix(I[i],J[i],val[i]);
     }
      if (infile.is_open())
         infile.close();
@@ -297,3 +302,4 @@ namespace algebra{
 }
     
 
+#endif
