@@ -25,5 +25,7 @@ int main(){
     for(std::size_t i=0; i<131; ++i){
         std::cout<< res_com[i]<<std::endl;
     }
+
+    return 0;
  
 }
