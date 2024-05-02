@@ -1,13 +1,14 @@
 #include "SparseMatrix.hpp"
+#include "Sparse_implementation.hpp"
 #include "chrono.hpp"
-#include "mmio.h"
 #include <iostream>
 #include <vector>
 using namespace algebra;
 using namespace Timings;
 
 int main(){
-    SparseMatrix<double, StorageOrder::Row_wise> matrix=reader_market_matrix<double,StorageOrder::Row_wise >("Insp_131.mtx");
+    SparseMatrix<double, StorageOrder::Row_wise> matrix=matrix.reader_market_matrix("lnsp_131.mtx");
+   // matrix.reader_market_matrix ("lnsp_131.mtx");
     std::vector<double> vec(131,0);
     vec[0]=1;
     Chrono clock;
