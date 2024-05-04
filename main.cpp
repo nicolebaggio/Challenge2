@@ -9,34 +9,6 @@ using namespace Timings;
 
 
 int main(){
-    SparseMatrix<double, StorageOrder::Column_wise> matrix(3,3);
-    matrix(0,0,1);
-    matrix(1,1,1);
-    matrix(2,2,1);
-    std::vector<double> vec(3,0);
-    vec[0]=1;
-    std::vector<double> res_uncom=matrix*vec;
-    std::cout<<"The Frobenius norm of the matrix is: "<<matrix.norm<Norm::Frobenius>()<<std::endl;
-    std::cout<<"The One norm of the matrix is: "<<matrix.norm<Norm::One>()<<std::endl;
-    std::cout<<"The Infinity norm of the matrix is: "<<matrix.norm<Norm::Infinity>()<<std::endl;
-    std::cout<<"The product of the uncompressed matrix and the vector is:"<<std::endl;
-    for(std::size_t i=0; i<3; ++i){
-        std::cout<< res_uncom[i]<<std::endl;
-    }
-    matrix.compress();
-    std::vector<double> res_com=matrix*vec;
-    std::cout<<"The Frobenius norm of the matrix is: "<<matrix.norm<Norm::Frobenius>()<<std::endl;
-    std::cout<<"The One norm of the matrix is: "<<matrix.norm<Norm::One>()<<std::endl;
-    std::cout<<"The Infinity norm of the matrix is: "<<matrix.norm<Norm::Infinity>()<<std::endl;
-    std::cout<<"The product of the compresed matrix and the vector is:"<<std::endl;
-    for(std::size_t i=0; i<3; ++i){
-        std::cout<< res_com[i]<<std::endl;
-    }
-
-}
-
-/*
-int main(){
     SparseMatrix<double, StorageOrder::Column_wise> matrix(131,131);
     SparseMatrix<std::complex<double>, StorageOrder::Column_wise> matrix2(131,131);
     matrix.reader_market_matrix("lnsp_131.mtx");
@@ -86,4 +58,34 @@ int main(){
 
     return 0;
  
-}*/
+}
+
+
+/* To try with a smaller matrix:
+int main(){
+    SparseMatrix<double, StorageOrder::Column_wise> matrix(3,3);
+    matrix(0,0,1);
+    matrix(1,1,1);
+    matrix(2,2,1);
+    std::vector<double> vec(3,0);
+    vec[0]=1;
+    std::vector<double> res_uncom=matrix*vec;
+    std::cout<<"The Frobenius norm of the matrix is: "<<matrix.norm<Norm::Frobenius>()<<std::endl;
+    std::cout<<"The One norm of the matrix is: "<<matrix.norm<Norm::One>()<<std::endl;
+    std::cout<<"The Infinity norm of the matrix is: "<<matrix.norm<Norm::Infinity>()<<std::endl;
+    std::cout<<"The product of the uncompressed matrix and the vector is:"<<std::endl;
+    for(std::size_t i=0; i<3; ++i){
+        std::cout<< res_uncom[i]<<std::endl;
+    }
+    matrix.compress();
+    std::vector<double> res_com=matrix*vec;
+    std::cout<<"The Frobenius norm of the matrix is: "<<matrix.norm<Norm::Frobenius>()<<std::endl;
+    std::cout<<"The One norm of the matrix is: "<<matrix.norm<Norm::One>()<<std::endl;
+    std::cout<<"The Infinity norm of the matrix is: "<<matrix.norm<Norm::Infinity>()<<std::endl;
+    std::cout<<"The product of the compresed matrix and the vector is:"<<std::endl;
+    for(std::size_t i=0; i<3; ++i){
+        std::cout<< res_com[i]<<std::endl;
+    }
+
+}
+*/
