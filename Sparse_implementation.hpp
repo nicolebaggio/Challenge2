@@ -1,5 +1,6 @@
 #include "SparseMatrix.hpp"
 #include <iostream> 
+#include <cmath>
 #include <fstream>
 namespace algebra{
 
@@ -115,6 +116,10 @@ const bool SparseMatrix<T,so>::is_compressed(){
 */
 template<typename T, StorageOrder so>        
 void SparseMatrix<T,so>::compress (){
+    if(flag==1){
+        std::cerr<<"Matrix already compressed!"<<std::endl;
+        return;
+    }
             std::size_t count=0;
             outer.reserve(data.size());
             elements.reserve(data.size());
@@ -261,10 +266,10 @@ const T SparseMatrix<T,so>::operator()(std::size_t row, std::size_t col){ //indi
     this->resize(M,N);
 
     for (std::size_t i = 0; i < nz; i++)
-    {
+    {   
         infile >> I[i] >> J[i] >> val[i];
         I[i]--;  // adjust from 1-based to 0-based
-        J[i]--;
+        J[i]--;  // adjust from 1-based to 0-based
         this->operator()(I[i],J[i],val[i]);
         
     }
@@ -285,8 +290,8 @@ const T SparseMatrix<T,so>::operator()(std::size_t row, std::size_t col){ //indi
     template<Norm n>
     T SparseMatrix<T,so>::norm(){
         if(flag==0){
-            T norm=0;
             if constexpr(n==Norm::One){
+                T norm=0;
                 if constexpr(so==StorageOrder::Row_wise){
                     for(std::size_t i=0; i<n_of_col; ++i){
                         T s=0;
@@ -299,7 +304,7 @@ const T SparseMatrix<T,so>::operator()(std::size_t row, std::size_t col){ //indi
                     }
                     return norm;
                 }
-                if constexpr(so==StorageOrder::Column_wise){
+                else if constexpr(so==StorageOrder::Column_wise){
                     for(std::size_t i=0; i<n_of_col; ++i){
                         T s=0;
                         for(std::size_t j=0; j<n_of_row; ++j){
@@ -314,6 +319,7 @@ const T SparseMatrix<T,so>::operator()(std::size_t row, std::size_t col){ //indi
             }
 
             if constexpr(n==Norm::Infinity){
+                T norm=0;
                 if constexpr(so==StorageOrder::Row_wise){
                     for(std::size_t i=0; i<n_of_row; ++i){
                         T s=0;
@@ -341,41 +347,25 @@ const T SparseMatrix<T,so>::operator()(std::size_t row, std::size_t col){ //indi
             }
 
             if constexpr(n==Norm::Frobenius){
-                if constexpr(so==StorageOrder::Row_wise){
-                    T s=0;
-                    for(std::size_t i=0; i<n_of_row; ++i){
-                        for(std::size_t j=0; j<n_of_col; ++j){
-                            if(data.find({i,j})!=data.end())
-                                s+=(data.at({i,j}))*(data.at({i,j}));
-                        }
-                    }
-                    norm=std::sqrt(s);
-                    return norm;
+                T norm=0;
+                for(auto& element: data){
+                    norm+=std::abs((element.second*element.second));
                 }
-                if constexpr(so==StorageOrder::Column_wise){
-                    T s=0;
-                    for(std::size_t i=0; i<n_of_row; ++i){
-                        for(std::size_t j=0; j<n_of_col; ++j){
-                            if(data.find({j,i})!=data.end())
-                                s+=(data.at({j,i}))*(data.at({j,i}));
-                        }
-                    }
-                    norm=std::sqrt(s);
-                    return norm;
-                }
+                return std::sqrt(norm);
             }
         }
 
         if(flag==1){
-            T norm=0;
             if constexpr(n==Norm::Frobenius){
+                T norm=0;
                 for(std::size_t i=0; i<elements.size(); ++i){
-                    norm+=(elements[i]*elements[i]);
+                    norm+=std::abs((elements[i]*elements[i]));
                 }
                 return std::sqrt(norm);
             }
 
             if constexpr(n==Norm::Infinity){
+                T norm=0;
                 if constexpr(so==StorageOrder::Row_wise){
                     for(std::size_t i=0; i<n_of_row; ++i){
                         T s=0;
@@ -402,6 +392,7 @@ const T SparseMatrix<T,so>::operator()(std::size_t row, std::size_t col){ //indi
 
             }
             if constexpr(n==Norm::One){
+                T norm=0;
                 if constexpr(so==StorageOrder::Row_wise){
                     for(std::size_t i=0; i<n_of_col; ++i){
                         T s=0;
@@ -427,7 +418,7 @@ const T SparseMatrix<T,so>::operator()(std::size_t row, std::size_t col){ //indi
                 }
            }
         }  
-    return norm;
+        return 0;
     };
 
 };

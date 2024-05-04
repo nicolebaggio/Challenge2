@@ -9,8 +9,8 @@ using namespace Timings;
 
 
 int main(){
-    SparseMatrix<double, StorageOrder::Column_wise> matrix(131,131);
-    SparseMatrix<std::complex<double>, StorageOrder::Column_wise> matrix2(131,131);
+    SparseMatrix<double, StorageOrder::Row_wise> matrix(131,131);
+    SparseMatrix<std::complex<double>, StorageOrder::Row_wise> matrix2(131,131);
     matrix.reader_market_matrix("lnsp_131.mtx");
     matrix2.reader_market_matrix("lnsp_131.mtx");
     std::cout<<"The Frobenius norm of the matrix is: "<<matrix.norm<Norm::Frobenius>()<<std::endl;
