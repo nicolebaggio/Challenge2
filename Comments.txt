@@ -1,0 +1,22 @@
+I see you used the github. Nice!
+Please make sure that the README.md contains the instructions to download and compile your code.
+
+Checklist:
+  - sparse_matrix constructor:   OKAY
+  - comparison operator:         OKAY
+  - compress:                    OKAY
+  - uncompress:                  OKAY
+  - data is properly cleared:    OKAY
+  - call to non-const / const assignment operator: IMPROVABLE
+  - resize method:               OKAY
+  - operator*:                   OKAY
+  - reading from file:           IMPROVABLE
+
+EXTRAs
+  - One Column Matrix:           OKAY
+  - Norms:                       OKAY 
+
+General Comments:
+  - You should never add piece of commented codes on your final push. In general, I would advise to have a different main function for testing purposes.
+  - I don't like the fact that you hard coded the dimensions of the matrix in your main function. What people do is usually to read first the dimension and then allocate the matrix. This can be done also by a separate function, or by the constructor itself. But please do not hard code it.
+  - Your assignment operator is a bit weird. Usually you have that A(i,j) returns a certain value, and if you want to change the value of A(i,j) you modified with something like: A(i,j) = v.
